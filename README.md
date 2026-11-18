@@ -83,8 +83,8 @@ Root Stack Navigator (Native Stack)
 
 | 1. Login Screen | 2. Explore & Best Match |
 | :---: | :---: |
-| <img src="screenshots/login.png" width="260" /> | <img src="screenshots/explore.png" width="260" /> |
+| <img src="screenshots/login.jpg" width="260" /> | <img src="screenshots/explore.jpg" width="260" /> |
 
 | 3. Space Details | 4. Booking Modal |
 | :---: | :---: |
-| <img src="screenshots/details.png" width="260" /> | <img src="screenshots/booking.png" width="260" /> |
+| <img src="screenshots/details.jpg" width="260" /> | <img src="screenshots/booking.jpg" width="260" /> |
