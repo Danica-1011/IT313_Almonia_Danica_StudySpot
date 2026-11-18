@@ -62,7 +62,7 @@ Root Stack Navigator (Native Stack)
 ### Installation
 1. Clone this repository:
    ```bash
-   git clone https://github.com/YOUR_GITHUB_USERNAME/IT313_Almonia_Danica_StudySpot.git
+   git clone https://github.com/Danica-1011/IT313_Almonia_Danica_StudySpot.git
    cd IT313_Almonia_Danica_StudySpot
    ```
 2. Install dependencies:
@@ -80,4 +80,11 @@ Root Stack Navigator (Native Stack)
 ---
 
 ## 5. Screenshots
-*(Add 3 screenshots here: Login, Explore with Best Match, and Booking Modal)*
+
+| 1. Login Screen | 2. Explore & Best Match |
+| :---: | :---: |
+| <img src="screenshots/login.png" width="260" /> | <img src="screenshots/explore.png" width="260" /> |
+
+| 3. Space Details | 4. Booking Modal |
+| :---: | :---: |
+| <img src="screenshots/details.png" width="260" /> | <img src="screenshots/booking.png" width="260" /> |
