@@ -81,8 +81,6 @@ Root Stack Navigator (Native Stack)
 
 ## 5. Screenshots
 
-## 5. Screenshots
-
 | 1. Login Screen | 2. Explore & Best Match |
 | :---: | :---: |
 | <img src="screenshots/login.jpg" width="260" /> | <img src="screenshots/explore.jpg" width="260" /> |
