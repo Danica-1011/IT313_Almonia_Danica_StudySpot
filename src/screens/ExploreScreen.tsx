@@ -30,6 +30,8 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
   onToggleFavorite,
 }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  
+  // F11: Responsive width check
   const { width } = useWindowDimensions();
   const isWideScreen = width >= 600;
 
@@ -43,14 +45,12 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
     setLastRefreshed(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
   }, []);
 
-  // F6: Refresh timestamp on focus
   useFocusEffect(
     useCallback(() => {
       updateTimestamp();
     }, [updateTimestamp])
   );
 
-  // F6: Pull-to-refresh handler
   const handleRefresh = () => {
     setRefreshing(true);
     setTimeout(() => {
@@ -59,7 +59,6 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
     }, 800);
   };
 
-  // F5: Filter spaces based on search and active chip
   const filteredSpaces = useMemo(() => {
     return spaces.filter((space) => {
       const matchesSearch =
@@ -80,16 +79,24 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
     });
   }, [spaces, searchQuery, activeFilter, favorites]);
 
-  // Group into SectionList sections
+  // Group into SectionList sections (chunk into rows of 2 on wide screens)
   const sections = useMemo(() => {
     const buildings = Array.from(new Set(filteredSpaces.map((s) => s.building)));
-    return buildings.map((building) => ({
-      title: building,
-      data: filteredSpaces.filter((s) => s.building === building),
-    }));
-  }, [filteredSpaces]);
+    return buildings.map((building) => {
+      const buildingSpaces = filteredSpaces.filter((s) => s.building === building);
 
-  // Best Match Rule: Quiet space with lowest occupancy that still has open slots
+      if (isWideScreen) {
+        const rows: StudySpace[][] = [];
+        for (let i = 0; i < buildingSpaces.length; i += 2) {
+          rows.push(buildingSpaces.slice(i, i + 2));
+        }
+        return { title: building, data: rows as any };
+      }
+
+      return { title: building, data: buildingSpaces as any };
+    });
+  }, [filteredSpaces, isWideScreen]);
+
   const bestMatchSpace = useMemo(() => {
     const candidates = spaces.filter((s) => {
       const hasOpenSlot = s.slots.some((slot) => !s.bookedSlots.includes(slot));
@@ -111,11 +118,11 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <Ionicons name="search" size={18} color="#9CA3AF" style={styles.searchIcon} />
+      {/* Search Bar - more compact in landscape */}
+      <View style={[styles.searchContainer, isWideScreen && styles.searchContainerWide]}>
+        <Ionicons name="search" size={16} color="#9CA3AF" style={styles.searchIcon} />
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, isWideScreen && styles.searchInputWide]}
           placeholder="Search spaces or buildings..."
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -123,8 +130,8 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
         />
       </View>
 
-      {/* Filter Chips Horizontal Scroll */}
-      <View style={styles.filtersWrapper}>
+      {/* Filter Chips */}
+      <View style={[styles.filtersWrapper, isWideScreen && { marginBottom: 2 }]}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filtersList}>
           {(['All', 'Quiet', 'Group', 'Open now', 'Favorites'] as const).map((filter) => (
             <FilterChip
@@ -140,27 +147,48 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
       {/* Best Match Banner */}
       <BestMatchBanner space={bestMatchSpace} onPress={handleOpenSpace} />
 
-      {/* SectionList of Spaces */}
+      {/* SectionList */}
       <SectionList
         sections={sections}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
+        keyExtractor={(item, index) => (Array.isArray(item) ? `row-${index}` : item.id)}
+        contentContainerStyle={[styles.listContent, isWideScreen && styles.listContentWide]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
         renderSectionHeader={({ section: { title } }) => (
-          <Text style={styles.sectionHeader}>{title.toUpperCase()}</Text>
+          <Text style={[styles.sectionHeader, isWideScreen && styles.sectionHeaderWide]}>
+            {title.toUpperCase()}
+          </Text>
         )}
-        renderItem={({ item }) => (
-          <SpaceCard
-            space={item}
-            isFavorite={favorites.includes(item.id)}
-            onToggleFavorite={onToggleFavorite}
-            onPress={() => handleOpenSpace(item.id)}
-            cardWidth={isWideScreen ? '48%' : '100%'}
-          />
-        )}
+        renderItem={({ item }) => {
+          if (isWideScreen && Array.isArray(item)) {
+            return (
+              <View style={styles.wideRow}>
+                {item.map((space: StudySpace) => (
+                  <View key={space.id} style={styles.wideCardWrapper}>
+                    <SpaceCard
+                      space={space}
+                      isFavorite={favorites.includes(space.id)}
+                      onToggleFavorite={onToggleFavorite}
+                      onPress={() => handleOpenSpace(space.id)}
+                    />
+                  </View>
+                ))}
+                {item.length === 1 && <View style={styles.wideCardWrapper} />}
+              </View>
+            );
+          }
+
+          return (
+            <SpaceCard
+              space={item as StudySpace}
+              isFavorite={favorites.includes((item as StudySpace).id)}
+              onToggleFavorite={onToggleFavorite}
+              onPress={() => handleOpenSpace((item as StudySpace).id)}
+            />
+          );
+        }}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Ionicons name="search-outline" size={44} color="#9CA3AF" />
+            <Ionicons name="search-outline" size={36} color="#9CA3AF" />
             <Text style={styles.emptyText}>No spaces match your search.</Text>
           </View>
         }
@@ -184,55 +212,82 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     marginHorizontal: 16,
-    marginTop: 12,
-    marginBottom: 8,
+    marginTop: 10,
+    marginBottom: 6,
     borderRadius: 10,
     paddingHorizontal: 12,
     borderWidth: 1,
     borderColor: '#E5E7EB',
   },
+  searchContainerWide: {
+    marginTop: 6,
+    marginBottom: 4,
+    marginHorizontal: 12,
+  },
   searchIcon: {
-    marginRight: 8,
+    marginRight: 6,
   },
   searchInput: {
     flex: 1,
-    height: 42,
+    height: 40,
     fontSize: 14,
     color: '#111827',
+  },
+  searchInputWide: {
+    height: 34,
+    fontSize: 13,
   },
   filtersWrapper: {
     marginBottom: 4,
   },
   filtersList: {
     paddingHorizontal: 16,
-    paddingVertical: 4,
+    paddingVertical: 2,
   },
   listContent: {
     paddingHorizontal: 16,
     paddingBottom: 24,
+  },
+  listContentWide: {
+    paddingHorizontal: 12,
+    paddingBottom: 16,
   },
   sectionHeader: {
     fontSize: 12,
     fontWeight: '800',
     color: '#6B7280',
     letterSpacing: 0.8,
-    marginTop: 14,
-    marginBottom: 8,
+    marginTop: 12,
+    marginBottom: 6,
+  },
+  sectionHeaderWide: {
+    marginTop: 8,
+    marginBottom: 4,
+    fontSize: 11,
+  },
+  wideRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginBottom: 4,
+  },
+  wideCardWrapper: {
+    flex: 1,
   },
   emptyContainer: {
-    paddingVertical: 50,
+    paddingVertical: 30,
     alignItems: 'center',
     justifyContent: 'center',
   },
   emptyText: {
-    marginTop: 10,
-    fontSize: 15,
+    marginTop: 8,
+    fontSize: 14,
     color: '#6B7280',
   },
   refreshText: {
     textAlign: 'center',
     fontSize: 11,
     color: '#9CA3AF',
-    marginTop: 16,
+    marginTop: 12,
   },
 });

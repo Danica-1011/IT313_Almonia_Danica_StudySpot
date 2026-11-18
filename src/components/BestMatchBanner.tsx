@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { StudySpace } from '../types';
 
@@ -9,10 +9,13 @@ type BestMatchBannerProps = {
 };
 
 export const BestMatchBanner: React.FC<BestMatchBannerProps> = ({ space, onPress }) => {
+  const { width } = useWindowDimensions();
+  const isWide = width >= 600;
+
   if (!space) {
     return (
-      <View style={[styles.container, styles.emptyContainer]}>
-        <Ionicons name="information-circle-outline" size={20} color="#6B7280" />
+      <View style={[styles.container, styles.emptyContainer, isWide && styles.containerWide]}>
+        <Ionicons name="information-circle-outline" size={18} color="#6B7280" />
         <Text style={styles.emptyText}>No quiet spaces with open slots right now.</Text>
       </View>
     );
@@ -23,18 +26,20 @@ export const BestMatchBanner: React.FC<BestMatchBannerProps> = ({ space, onPress
   return (
     <Pressable
       onPress={() => onPress(space.id)}
-      style={({ pressed }) => [styles.container, pressed && { opacity: 0.9 }]}
+      style={({ pressed }) => [
+        styles.container,
+        isWide && styles.containerWide,
+        pressed && { opacity: 0.9 },
+      ]}
     >
-      <View style={styles.iconContainer}>
-        <Ionicons name="sparkles" size={20} color="#F59E0B" />
-      </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.heading}>★ Best match right now</Text>
+      <Ionicons name="sparkles" size={18} color="#F59E0B" style={styles.icon} />
+      <View style={[styles.textContainer, isWide && styles.textContainerWide]}>
+        <Text style={styles.heading}>★ Best match right now: </Text>
         <Text style={styles.subtext}>
           {space.name} · {occupancyPct}% full
         </Text>
-        <Text style={styles.tapAction}>Tap to open details</Text>
       </View>
+      <Text style={styles.tapAction}>Tap to open</Text>
     </Pressable>
   );
 };
@@ -44,42 +49,52 @@ const styles = StyleSheet.create({
     backgroundColor: '#FEF3C7',
     borderColor: '#FDE68A',
     borderWidth: 1,
-    borderRadius: 12,
-    padding: 12,
+    borderRadius: 10,
+    padding: 10,
     marginHorizontal: 16,
-    marginVertical: 10,
+    marginVertical: 6,
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  containerWide: {
+    marginHorizontal: 12,
+    marginVertical: 4,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
   },
   emptyContainer: {
     backgroundColor: '#F3F4F6',
     borderColor: '#E5E7EB',
   },
-  iconContainer: {
-    marginRight: 10,
+  icon: {
+    marginRight: 8,
   },
   textContainer: {
     flex: 1,
   },
+  textContainerWide: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
   heading: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
     color: '#92400E',
   },
   subtext: {
     fontSize: 12,
     color: '#78350F',
-    marginTop: 2,
   },
   tapAction: {
     fontSize: 11,
     color: '#B45309',
-    marginTop: 2,
     textDecorationLine: 'underline',
+    marginLeft: 6,
   },
   emptyText: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#4B5563',
-    marginLeft: 8,
+    marginLeft: 6,
   },
 });
