@@ -81,16 +81,12 @@ Root Stack Navigator (Native Stack)
 
 ## 5. Screenshots
 
+## 5. Screenshots
+
 | 1. Login Screen | 2. Explore & Best Match |
 | :---: | :---: |
-| <img src="screenshots/login.jpg" width="260" /> <img width="1080" height="2400" alt="login" src="https://github.com/user-attachments/assets/99b19fb7-ce91-494b-8417-d34ab9aaeca1" />
-
-| <img src="screenshots/explore.jpg" width="260" /> <img width="1080" height="2400" alt="explore" src="https://github.com/user-attachments/assets/d7009cdc-3a0d-453e-8525-67d3cc35c824" />
- |
+| <img src="screenshots/login.jpg" width="260" /> | <img src="screenshots/explore.jpg" width="260" /> |
 
 | 3. Space Details | 4. Booking Modal |
 | :---: | :---: |
-| <img src="screenshots/details.jpg" width="260" /> <img width="1080" height="2400" alt="details" src="https://github.com/user-attachments/assets/a05fc20e-f630-4c16-b33a-e832d9b4af34" />
-
-| <img src="screenshots/booking.jpg" width="260" /> <img width="1080" height="2400" alt="booking" src="https://github.com/user-attachments/assets/6a0695ff-0004-41b1-89bb-30acc0c5808d" />
- |
+| <img src="screenshots/details.jpg" width="260" /> | <img src="screenshots/booking.jpg" width="260" /> |
