@@ -2,7 +2,7 @@
 
 **Course:** IT 313 – Mobile Programming (React Native)  
 **Student:** Danica Almonia  
-**Section:** BSIT-3A  
+**Section:** BSIT-2R3
 
 ---
 
