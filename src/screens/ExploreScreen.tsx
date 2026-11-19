@@ -9,6 +9,7 @@ import {
   RefreshControl,
   useWindowDimensions,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -117,8 +118,9 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      {/* Search Bar - more compact in landscape */}
+    // SafeAreaView with edges={['left', 'right']} prevents phone navigation bar overlap!
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      {/* Search Bar */}
       <View style={[styles.searchContainer, isWideScreen && styles.searchContainerWide]}>
         <Ionicons name="search" size={16} color="#9CA3AF" style={styles.searchIcon} />
         <TextInput
@@ -198,7 +200,7 @@ export const ExploreScreen: React.FC<ExploreScreenProps> = ({
           </Text>
         }
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -222,7 +224,7 @@ const styles = StyleSheet.create({
   searchContainerWide: {
     marginTop: 6,
     marginBottom: 4,
-    marginHorizontal: 12,
+    marginHorizontal: 16,
   },
   searchIcon: {
     marginRight: 6,
@@ -246,11 +248,11 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: 16,
-    paddingBottom: 24,
+    paddingBottom: 40,
   },
   listContentWide: {
-    paddingHorizontal: 12,
-    paddingBottom: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 70, // extra padding so you can scroll past the bottom tabs
   },
   sectionHeader: {
     fontSize: 12,
